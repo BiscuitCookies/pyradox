@@ -62,18 +62,18 @@ def check_years(tech_keys, filename, date):
 
 for filename, country in pyradox.txt.parse_dir(os.path.join(pyradox.get_game_directory('HoI4'), 'history', 'countries')):
     tech_keys = set(country['set_technology'].keys())
-    check_deps(tech_keys, filename, pyradox.Date('1936.1.1'))
+    check_deps(tech_keys, filename, pyradox.Time('1007.1.1'))
     for date, effects in country.items():
-        if not isinstance(date, pyradox.Date): continue
+        if not isinstance(date, pyradox.Time): continue
         if 'set_technology' not in effects: continue
         tech_keys |= set(effects['set_technology'].keys())
         check_deps(tech_keys, filename, date)
 
 for filename, country in pyradox.txt.parse_dir(os.path.join(pyradox.get_game_directory('HoI4'), 'history', 'countries')):
     tech_keys = set(country['set_technology'].keys())
-    check_years(tech_keys, filename, pyradox.Date('1936.1.1'))
+    check_years(tech_keys, filename, pyradox.Time('1007.1.1'))
     for date, effects in country.items():
-        if not isinstance(date, pyradox.Date): continue
+        if not isinstance(date, pyradox.Time): continue
         if 'set_technology' not in effects: continue
         tech_keys |= set(effects['set_technology'].keys())
         check_years(tech_keys, filename, date)

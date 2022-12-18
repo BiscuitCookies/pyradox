@@ -14,7 +14,7 @@ countries = hoi4.load.get_countries()
 
 for tag, country in countries.items():
     if 'add_ideas' in country:
-        for idea in country['add_ideas']:
+        for idea in country.find_all('add_ideas'):
             if idea in economics['economy']:
                 country['economy'] = idea
             elif idea in economics['trade_laws']:

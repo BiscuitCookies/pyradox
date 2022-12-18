@@ -10,7 +10,7 @@ import pyradox
 
 from PIL import Image
 
-date = pyradox.Time('1936.1.1')
+date = pyradox.Time('1007.1.1')
 #date = pyradox.Time('1939.8.14')
 
 vp_images = pyradox.image.split_strip(Image.open('in/onmap_victorypoints_strip.png'), subwidth = 29)
@@ -29,7 +29,7 @@ def compute_color(values):
     else:
         # hsv
         return pyradox.image.HSVtoRGB(values)
-     
+
 
 # find all capitals and country colors
 
@@ -71,7 +71,7 @@ for state in states.values():
 
     if state['id'] in capital_states and not controller in capital_states[state['id']]:
         print("Country %s overriding %s" % (controller, capital_states[state['id']]))
-        
+
     for province_id, vp in history.find_all('victory_points', tuple_length = 2):
         # write number of vps
         textmap[province_id] = str(vp)
@@ -88,7 +88,7 @@ for state in states.values():
 
     # backup capital
     if need_capital:
-        capital_province_id = state['provinces'][0]
+        capital_province_id = state['provinces']
         iconmap[capital_province_id] = capital_icon
         iconoffsetmap[capital_province_id] = (0, -2)
         textmap[capital_province_id] = '0'

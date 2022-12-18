@@ -1,7 +1,7 @@
 import hoi4
 import pyradox
 
-date = '1936.1.1'
+date = '1007.1.1'
 
 states = hoi4.load.get_states()
 countries = hoi4.load.get_countries(date = date)

@@ -13,7 +13,7 @@ from PIL import Image
 # province IDs to ignore
 ignore = [13204]
 
-date = pyradox.Time('1936.1.1')
+date = pyradox.Time('1007.1.1')
 #date = pyradox.Time('1939.8.14')
 
 
@@ -30,7 +30,7 @@ for state in states.values():
     controller = history['controller'] or history['owner']
 
     if controller not in country_provinces: country_provinces[controller] = []
-    
+
     for province_id in state.find_all('provinces'):
         if not province_id in ignore:
             country_provinces[controller].append(province_id)
@@ -43,4 +43,4 @@ for tag, province_ids in country_provinces.items():
 province_map = pyradox.worldmap.ProvinceMap(game = 'HoI4')
 
 
-print(province_map.generate_imagemap('File:Political map.png|thumb|800px|center|Countries in 1936.', links))
+print(province_map.generate_image('File:Political map.png|thumb|800px|center|Countries in 1936.', links))

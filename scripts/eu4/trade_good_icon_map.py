@@ -9,7 +9,7 @@ import pyradox
 
 from PIL import Image
 
-start_date = pyradox.Date('1444.11.11')
+start_date = pyradox.Time('1444.11.11')
 
 # get trade goods
 resource_images = pyradox.image.split_strip(Image.open('in/resources.png'))
@@ -38,8 +38,8 @@ for filename, data in pyradox.txt.parse_dir(os.path.join(pyradox.get_game_direct
             if curr_good != 'unknown':
                 trade_good = curr_good
         iconmap[province_id] = trade_good_icons[trade_good]
-            
-        
+
+
 province_map = pyradox.worldmap.ProvinceMap()
 base_map = province_map.generate_image(colormap)
 max_size_map = base_map.resize((base_map.size[0] * 4, base_map.size[1] * 4), Image.ANTIALIAS)

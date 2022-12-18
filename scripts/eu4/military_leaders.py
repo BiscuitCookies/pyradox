@@ -25,7 +25,7 @@ for tag, country in countries.items():
     country_name = load.country.get_country_name(tag)
 
     for date, data in country.items():
-        if not isinstance(date, pyradox.Date): continue
+        if not isinstance(date, pyradox.Time): continue
         for leader in data.find_all('leader'):
             leader["country"] = country_name
             leader["start_date"] = date

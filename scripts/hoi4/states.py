@@ -5,7 +5,7 @@ import json
 import hoi4
 import pyradox
 
-date = '1936.1.1'
+date = '1007.1.1'
 
 beta = False
 
@@ -38,7 +38,7 @@ for state in states.values():
     state_category_key = state['state_category']
     state['building_slots'] = state_categories[state_category_key]['local_building_slots'] or 0
     country['building_slots'] = (country['building_slots'] or 0) + state['building_slots']
-    
+
     if 'resources' in state:
         for resource, quantity in state['resources'].items():
             state[resource] = quantity

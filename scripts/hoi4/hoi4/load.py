@@ -1,3 +1,5 @@
+import sys
+import os
 import pyradox
 import re
 
@@ -16,10 +18,26 @@ def get_equipments(beta = False):
 def compute_country_tag_and_name(filename):
     m = re.match('.*([A-Z]{3})\s*-\s*(.*)\.txt$', filename)
     return m.group(1), m.group(2)
-    
-def get_countries(beta = False, date = '1936.1.1'):
+
+def get_countries(beta = False, date = '1007.1.1'):
     game = 'HoI4_beta' if beta else 'HoI4'
-    
+    races = pyradox.txt.parse_file(
+        os.path.join(pyradox.get_game_directory('HoI4'),
+                 'common', 'ideas', '_race_pointers.txt'))['ideas']
+    sciences = pyradox.txt.parse_file(
+        os.path.join(pyradox.get_game_directory('HoI4'),
+                 'common', 'ideas', '_city_research.txt'))['ideas']
+    illiteracies = pyradox.txt.parse_file(
+        os.path.join(pyradox.get_game_directory('HoI4'),
+                 'common', 'ideas', '_lack_of_scientist_ideas.txt'))['ideas']
+    poverties = pyradox.txt.parse_file(
+        os.path.join(pyradox.get_game_directory('HoI4'),
+                 'common', 'ideas', '_poverty_ideas.txt'))['ideas']
+    societies = pyradox.txt.parse_file(
+        os.path.join(pyradox.get_game_directory('HoI4'),
+                 'common', 'ideas', '_society_development_ideas.txt'))['ideas']
+    country_colors = {}
+    country_color_file = pyradox.txt.parse_file(os.path.join(pyradox.get_game_directory('HoI4'), 'common', 'countries', 'colors.txt'))
     countries = {}
 
     for filename, country in pyradox.txt.parse_dir(('history', 'countries'), game = game):
@@ -31,14 +49,48 @@ def get_countries(beta = False, date = '1936.1.1'):
         else:
             ruling_party = 'neutrality'
         country['ruling_party'] = ruling_party
+        if 'set_technology' in country:
+            for tech in country['set_technology']:
+                if tech in races['race_pointer']:
+                    race = pyradox.yml.get_localisation(tech + '_type', game = game)
+                    country['race'] = race
+        if 'add_ideas' in country:
+            for idea in country.find_all('add_ideas'):
+                if idea in sciences['city_idea']:
+                    country['science'] = idea
+                elif idea in societies['society_development_idea']:
+                    country['society'] =  idea
+                elif idea in illiteracies['illiteracy_level_idea']:
+                    country['illiteracy'] = idea
+                elif idea in poverties['poverty_level_idea']:
+                    country['poverty'] = idea
+
+        country['race'] = country['race'] or 'unknown'
+        country['science'] = country['science'] or 'proper_science_base'
+        country['society'] = country['society'] or 'modern_society'
+        country['illiteracy'] = country['illiteracy'] or 'no_lack_of_scientists'
+        country['poverty'] = country['poverty'] or 'no_poverty'
+
+        country['science'] = pyradox.yml.get_localisation(country['science'] , game = game)
+        country['society'] = pyradox.yml.get_localisation(country['society'] , game = game)
+        country['illiteracy'] = pyradox.yml.get_localisation(country['illiteracy'] , game = game)
+        country['poverty'] = pyradox.yml.get_localisation(country['poverty'] , game = game)
+
+        if tag in country_color_file:
+            country_colors[tag] = country_color_file[tag].find('color').to_rgb()
+        else:
+            print('HACK FOR {0}'.format(tag))
+            country_colors[tag] = (165, 102, 152)
+        country_color = country_colors[tag]
+        country['color'] = str(tuple(country_color))
 
         localisation_key = '%s_%s' % (tag, ruling_party)
-        country['name'] = pyradox.yml.get_localisation(localisation_key, game = game) or localisation_key
+        country['name'] = pyradox.yml.get_localisation(localisation_key, game = game) or pyradox.yml.get_localisation(tag, game = game) or localisation_key
         countries[tag] = country
-    
+
     return countries
-    
-    
+
+
 def get_states(beta = False):
     game = 'HoI4_beta' if beta else 'HoI4'
     result = pyradox.parse_merge(['history', 'states'], game = 'HoI4')

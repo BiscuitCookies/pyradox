@@ -27,7 +27,7 @@ s += '! Country !! Date !! Research slots !! Tech count !! Tech cost !! Since st
 
 for filename, country in pyradox.txt.parse_dir(os.path.join(pyradox.get_game_directory('HoI4'), 'history', 'countries')):
     tag, name = compute_country_tag_and_name(filename)
-    date = pyradox.Time('1936.1.1')
+    date = pyradox.Time('1007.1.1')
     if 'set_technology' in country:
         tech_keys = set(country['set_technology'].keys())
         start_tech_count, start_tech_cost = total_techs(tech_keys, filename, date)

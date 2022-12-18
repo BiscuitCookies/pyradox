@@ -26,7 +26,7 @@ symbol_override = {
     'jungle' : '♣',
     'plains' : '',
     'urban' : '⚑',
-    'unknown' : '',
+    'unknown' : '?',
     }
 
 colormap = {}

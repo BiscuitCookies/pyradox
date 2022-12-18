@@ -37,7 +37,7 @@ for state in states.values():
     for province_id in state.find_all('provinces'):
         if not province_map.is_water_province(province_id):
             k.append(province_id)
-            x = (infrastructure / 9.0) ** colormap_power
+            x = (infrastructure / 4.0) ** colormap_power
             colormap[province_id] = pyradox.image.colormap_red_green(x)
     k = tuple(x for x in k)
     groups[k] = '%d' % infrastructure

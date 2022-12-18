@@ -48,10 +48,10 @@ def province_cost(province_id, province):
     cost = 0
     if 'base_tax' in province:
         cost += province['base_tax'] * 0.5
-            
+
     if 'base_production' in province:
         cost += province['base_production'] * 0.5
-        
+
     if 'base_manpower' in province:
         cost += province['base_manpower'] * 0.5
 
@@ -65,12 +65,12 @@ def province_cost(province_id, province):
 
     if 'extra_cost' in province:
         cost += province['extra_cost']
-        
+
     if cost > 0:
         return cost
     else:
         return None
-    
+
 def native_population(province_id, province):
     if 'native_size' in province:
         return province['native_size'] / 10.0
@@ -87,15 +87,15 @@ rank_method = 'dense'
 
 def generate_map(province_function, filename, force_min = None):
     number_map = {int(re.match('\d+', filename).group(0)) :
-                 province_function(int(re.match('\d+', filename).group(0)), province.at_date(pyradox.Date('1444.11.11')))
+                 province_function(int(re.match('\d+', filename).group(0)), province.at_date(pyradox.Time('1444.11.11')))
                  for filename, province in provinces.items()
                  if province_function(int(re.match('\d+', filename).group(0)), province) is not None}
-    
+
     if force_min is None:
         force_min = min(number_map.values())
 
     effective_numbers = [max(x, force_min) for x in number_map.values()]
-        
+
     ranks = scipy.stats.rankdata(effective_numbers, method = rank_method)
     min_rank = min(ranks)
     max_rank = max(ranks)
@@ -113,7 +113,7 @@ def generate_map(province_function, filename, force_min = None):
     image = province_map.generate_image(color_map)
     province_map.overlay_text(image, text_map, fontfile = "tahoma.ttf", default_font_color=(255, 255, 255), fontsize = 9, antialias = False)
     pyradox.image.save_using_palette(image, filename)
-        
+
 generate_map(province_base_tax, 'out/base_tax_map.png', force_min = 1.0)
 generate_map(province_base_production, 'out/base_production_map.png', force_min = 1.0)
 generate_map(province_base_manpower, 'out/base_manpower_map.png', force_min = 1.0)
@@ -121,6 +121,3 @@ generate_map(province_base_development, 'out/base_development_map.png', force_mi
 generate_map(province_cost, 'out/custom_nation_cost_map.png', force_min = 1.0)
 # generate_map(native_population, 'out/native_population_map.png')
 generate_map(native_aggressiveness, 'out/native_aggressiveness_map.png')
-
-
-
