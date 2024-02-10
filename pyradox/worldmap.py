@@ -84,7 +84,7 @@ class ProvinceMap():
                     self.water_provinces.add(province_id)
 
             province_count = 0
-            for row in csv_reader:
+            for rowcount, row in enumerate(csv_reader):
                 try:
                     province_id = int(row[0])
                     province_color = (int(row[1]), int(row[2]), int(row[3]))
@@ -93,8 +93,8 @@ class ProvinceMap():
                     self.province_id_by_color[province_color] = province_id
                     province_count += 1
                 except ValueError:
-                    warnings.warn('Could not parse province definition from row "%s" of %s.' % (str(row), definition_csv))
-                    pass
+                    if rowcount > 0:  # skip errors in the first row, because that can be a heading line
+                        warnings.warn('Could not parse province definition from row "%s" of %s.' % (str(row), definition_csv))
 
             print("Read %d provinces from %s." % (province_count, definition_csv))
 
@@ -118,7 +118,9 @@ class ProvinceMap():
                 prev_x, prev_y = self.positions['centroid'][province_id]
                 self.positions['centroid'][province_id] = (prev_x / size, prev_y / size)
             else:
-                warnings.warn('Province %d has size 0.' % province_id)
+                # ignore size 0 provinces, because the RNW has many of them and this hides other more important errors
+                # warnings.warn('Province %d has size 0.' % province_id)
+                pass
 
         print('Computed province centroids.')
 

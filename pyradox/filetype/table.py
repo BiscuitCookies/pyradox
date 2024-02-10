@@ -34,8 +34,8 @@ class WikiDialect(Dialect):
         if sortable:
             table_classes.append('sortable')
         if table_style:
-            table_style = 'style="%s"' % table_style
-        return '{| class = "%s" %s\n' % (' '.join(table_classes), table_style)
+            table_style = ' style="%s"' % table_style
+        return '{| class = "%s"%s\n' % (' '.join(table_classes), table_style)
 
     table_end = '|}\n'
     row_delimiter = '|-\n'
@@ -161,11 +161,18 @@ def make_table(tree, dialect, column_specs = None, filter_function = None, sort_
     for key, row in rows:
         table_row = []
         for _, format_spec in column_specs:
-            cell_contents = apply_format_spec(key, row, format_spec)
-            cell_contents = dialect.row_cell_begin(cell_contents) + cell_contents + dialect.row_cell_end
-            table_row.append(cell_contents)
-        table_row = dialect.row_begin + dialect.row_cell_delimiter.join(table_row) + dialect.row_end
-        table_rows.append(table_row)
+            try:
+                cell_contents = apply_format_spec(key, row, format_spec)
+                cell_contents = dialect.row_cell_begin(cell_contents) + cell_contents + dialect.row_cell_end
+                table_row.append(cell_contents)
+            except KeyError:
+                pass
+        if callable(dialect.row_begin):
+            table_row_str = dialect.row_begin(row)
+        else:
+            table_row_str = dialect.row_begin
+        table_row_str += dialect.row_cell_delimiter.join(table_row) + dialect.row_end
+        table_rows.append(table_row_str)
 
     table += dialect.row_delimiter.join(table_rows)
     table += dialect.table_end

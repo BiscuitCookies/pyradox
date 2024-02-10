@@ -29,33 +29,34 @@ class GameFileValidator():
                 lineno += 1
                 try:
                     cp1252string = str(line, 'cp1252')
-                    try:
-                        utf8string = str(line, 'utf8')
-                        if ignore_comments:
-                            cp1252string_to_compare = self.remove_comment_re.sub('', cp1252string)
-                            utf8string_to_compare = self.remove_comment_re.sub('', utf8string)
-                        else:
-                            cp1252string_to_compare = cp1252string
-                            utf8string_to_compare = utf8string
-                        if utf8string_to_compare != cp1252string_to_compare:
-                            print("Possible utf8 line {} found in {}".format(lineno, filename), file=sys.stderr)
-                            print('utf8: {}'.format(utf8string), end='', file=sys.stderr)
-                            print('1252: {}'.format(cp1252string), end='', file=sys.stderr)
-                            print('-------------------------------------------------------', file=sys.stderr)
-                            if not dry_run:
-                                try:
-                                    line = utf8string.encode('cp1252')
-                                    file_changed = True
-                                except UnicodeEncodeError:
-                                    print("line {} in \"{}\" can't be represented as cp1252".format(lineno, filename), file=sys.stderr)
-                                    print(line, file=sys.stderr)
-
-                    except UnicodeDecodeError:
-                        pass # so its not utf8
+                except UnicodeDecodeError:
+                    print("non1252 line {} found in {}. Ignoring invalid characters".format(lineno, filename), file=sys.stderr)
+                    print(line, file=sys.stderr)
+                    cp1252string = str(line, 'cp1252', errors='ignore')
+                try:
+                    utf8string = str(line, 'utf8')
+                    if ignore_comments:
+                        cp1252string_to_compare = self.remove_comment_re.sub('', cp1252string)
+                        utf8string_to_compare = self.remove_comment_re.sub('', utf8string)
+                    else:
+                        cp1252string_to_compare = cp1252string
+                        utf8string_to_compare = utf8string
+                    if utf8string_to_compare != cp1252string_to_compare:
+                        print("Possible utf8 line {} found in {}".format(lineno, filename), file=sys.stderr)
+                        print('utf8: {}'.format(utf8string), end='', file=sys.stderr)
+                        print('1252: {}'.format(cp1252string), end='', file=sys.stderr)
+                        print('-------------------------------------------------------', file=sys.stderr)
+                        if not dry_run:
+                            try:
+                                line = utf8string.encode('cp1252')
+                                file_changed = True
+                            except UnicodeEncodeError:
+                                print("line {} in \"{}\" can't be represented as cp1252".format(lineno, filename), file=sys.stderr)
+                                print(line, file=sys.stderr)
 
                 except UnicodeDecodeError:
-                    print("non1252 line {} found in {}".format(lineno, filename), file=sys.stderr)
-                    print(line, file=sys.stderr)
+                    pass # so its not utf8
+
                 lines.append(line)
             if file_changed and not dry_run:
                 file.seek(0)
