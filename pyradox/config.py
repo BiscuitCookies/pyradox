@@ -19,7 +19,8 @@ game_suffixes = {
     'EU4' : r'Europa Universalis IV',
     'HoI3' : r'Hearts of Iron 3/tfh',
     'HoI3_vanilla' : r'Hearts of Iron 3',
-    'HoI4' : r'equestria',
+    'HoI4' : r'equestria_dev',
+    'HoI4mod' : r'Hearts of Iron IV',
     'HoI4_beta' : r'Hearts of Iron IV BETA',
     'Stellaris' : r'Stellaris',
 }

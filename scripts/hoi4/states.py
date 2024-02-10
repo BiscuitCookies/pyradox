@@ -19,10 +19,12 @@ localisation_sources = ['state_names']
 countries = hoi4.load.get_countries()
 
 states = pyradox.txt.parse_merge(os.path.join(pyradox.get_game_directory(game), 'history', 'states'))
-state_categories = pyradox.txt.parse_merge(os.path.join(pyradox.get_game_directory(game), 'common', 'state_category'),
+state_categories = pyradox.txt.parse_merge(os.path.join(pyradox.get_game_directory('HoI4mod'), 'common', 'state_category'),
                                          verbose=False, merge_levels = 1)
 
 state_categories = state_categories['state_categories']
+
+
 
 for state in states.values():
     history = state['history'].at_time(date, merge_levels = -1)
@@ -31,9 +33,32 @@ for state in states.values():
     state['owner_name'] = countries[history['owner']]['name']
     state['human_name'] = pyradox.yml.get_localisation(state['name'], game = game)
 
+    state['cores_name'] = '<ul style="list-style: none;">'
+    for core in history.find_all('add_core_of'):
+        human_core = countries[core]['name']
+        flag_core = ' <li>{{flag|%s|wrap = yes}}</li>' % human_core
+        state['cores_name'] += flag_core
+    state['cores_name'] += '</ul>'
+
+    state['claims_name'] = ''
+    #i hate this solution
+    state_claims_counter = 0
+    for i in history.find_all('add_claim_by'):
+        state_claims_counter += 1
+
+    if state_claims_counter > 0:
+        state['claims_name'] = '<ul style="list-style: none;">'
+        for claim in history.find_all('add_claim_by'):
+            human_claim = countries[claim]['name']
+            flag_claim = ' <li>{{flag|%s|wrap = yes}}</li>' % human_claim
+            state['claims_name'] += flag_claim
+        state['claims_name'] += '</ul>'
+
     country = countries[state['owner']]
 
     country['states'] = (country['states'] or 0) + 1
+
+    state['state_category_name'] = pyradox.yml.get_localisation(state['state_category'], game = game)
 
     state_category_key = state['state_category']
     state['building_slots'] = state_categories[state_category_key]['local_building_slots'] or 0
@@ -61,14 +86,14 @@ def sum_keys_function(*sum_keys):
     return result_function
 
 columns = (
-    ('ID', '%(id)s'),
     ('Name', '%(human_name)s'),
-    ('Country', '{{flag|%(owner_name)s}}'),
-    ('Tag', '%(owner)s'),
+    ('ID', '%(id)s'),
+    ('Country', '{{flag|%(owner_name)s|wrap = yes}}'),
+    # ('Tag', '%(owner)s'),
     ('{{Icon|vp}}', '%(victory_point_total)d'),
     ('{{Icon|pop|(M)}}', lambda k, v: '%0.2f' % ((v['manpower'] or 0) / 1e6) ),
     ('{{Icon|infra}}', '%(infrastructure)d'),
-    ('State category', '%(state_category)s'),
+    ('State category', '%(state_category_name)s'),
     ('{{Icon|Building slot}}', '%(building_slots)d'),
     ('{{Icon|MIC}}', '%(arms_factory)d'),
     ('{{Icon|NIC}}', '%(dockyard)d'),
@@ -83,13 +108,15 @@ columns = (
     # ('Total resources', sum_keys_function('oil', 'aluminium', 'rubber', 'tungsten', 'steel', 'chromium')),
     ('{{Icon|Air base}}', '%(air_base)d'),
     ('{{Icon|Naval base}}', '%(naval_base)d'),
+    ('Cores', '%(cores_name)s'),
+    ('Claims', '%(claims_name)s'),
     )
 
 if beta:
     out_filename = "out/states_beta.txt"
 else:
     out_filename = "out/states.txt"
-with open(out_filename, "w") as out:
+with open(out_filename, "w", encoding='utf-8') as out:
     out.write(pyradox.table.make_table(states, 'wiki', columns, sort_function = lambda key, value: value['id']))
 
 if beta:
@@ -104,5 +131,5 @@ if beta:
 else:
     json_filename = "out/states.json"
 
-with open(json_filename, 'w') as f:
+with open(json_filename, 'w', encoding='utf-8') as f:
     pyradox.json.dump_tree(states.replace_key_with_subkey('state', 'id'), f)

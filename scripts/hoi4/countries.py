@@ -143,11 +143,11 @@ columns = (
     ('Notes','}}<noinclude>}}\n[[Category:Country table templates]]\n</noinclude>')
     )
 
-out = open("out/countriesstart.txt", "w")
+out = open("out/countriesstart.txt", "w", encoding='utf-8')
 out.write(pyradox.table.make_table(countriesstart, 'template', columns, sort_function = lambda key, value: value['name']))
 out.close()
 
-out = open("out/countriesrelease.txt", "w")
+out = open("out/countriesrelease.txt", "w", encoding='utf-8')
 out.write(pyradox.table.make_table(countriesrelease, 'template', columns, sort_function = lambda key, value: value['name']))
 out.close()
 

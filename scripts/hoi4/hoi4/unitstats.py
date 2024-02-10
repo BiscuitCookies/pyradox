@@ -4,7 +4,7 @@ import pyradox
 
 production_per_resource = 1.5 / 8.0
 
-default_year = 1918
+default_year = 1007
 
 techs = hoi4.load.get_technologies()
 equipments = hoi4.load.get_equipments()
@@ -15,7 +15,7 @@ for equipment_key, equipment_value in equipments.items():
         if equipment_value["archetype"] in equipments:
             equipment_value.weak_update(equipments[equipment_value["archetype"]])
             equipment_value["is_archetype"] = False
-        
+
 for tech_key, tech in techs.items():
     if not isinstance(tech, pyradox.Tree): continue
     year = tech["start_year"] or default_year
@@ -31,29 +31,29 @@ for tech_key, tech in techs.items():
 
 def units_at_year(year):
     units = hoi4.load.get_units()
-    
+
     # archetype_key -> best equipment
     equipment_models = {}
-    
+
     for unit_key, unit_data in units.items():
         unit_data["year"] = year
         unit_data["last_upgrade"] = default_year
         if "active" not in unit_data.keys(): unit_data["active"] = True
-    
+
     for tech_key, tech in techs.items():
         if not isinstance(tech, pyradox.Tree): continue
         tech_year = tech["start_year"] or default_year
         if tech_year > year: continue
-        
+
         if 'folder' in tech and 'doctrine' in tech['folder']['name']: continue # ignore doctrines
         if "enable_subunits" in tech:
             for unit_key in tech.find_all("enable_subunits"):
                 if unit_key in units:
                     units[unit_key]["active"] = True
                     units[unit_key]["last_upgrade"] = max(units[unit_key]["last_upgrade"], tech_year)
-        
+
         if tech["allow"] and tech["allow"]["always"] == False: continue # ignore unallowed techs, but allow subunits through
-        
+
         if "enable_equipments" in tech:
             for equipment_key in tech.find_all("enable_equipments"):
                 if equipment_key in equipments:
@@ -63,8 +63,8 @@ def units_at_year(year):
                         equipment_models[archetype_key] = equipments[equipment_key]
                     equipment_models[equipment_key] = equipments[equipment_key]
                     # TODO: drop ordering assumption?
-        
-        
+
+
         # non-equipment modifiers
         for unit_key, unit_data in units.items():
             for tech_unit_key, stats in tech.items():
@@ -86,12 +86,12 @@ def units_at_year(year):
                     print("Warning: non-archetype equipment %s defined for %s" % (archetype_key, unit_key))
             else:
                 unit_data["equipments"][archetype_key] = False
-        
+
     return units
 
 def compute_unit_name(unit_key, unit = None):
     return pyradox.yml.get_localisation(unit_key, game = 'HoI4') or pyradox.format.human_string(unit_key)
-    
+
 def compute_unit_type(unit):
     if unit["map_icon_category"] == "ship":
         return "naval"
@@ -99,7 +99,7 @@ def compute_unit_type(unit):
         return "air"
     else:
         return "land"
-        
+
 def compute_equipment_type(equipment):
     if 'air_range' in equipment:
         return 'air'
@@ -137,17 +137,17 @@ def compute_unit_total_cost(unit_key, unit_data):
         result += quantity * (equipment["build_cost_ic"]
                               + production_per_resource * sum(equipment["resources"].values()) * equipment["build_cost_ic"])
     return "%d" % result
-    
+
 def compute_equipment_cost(equipment_key, equipment):
     if 'build_cost_ic' not in equipment:
         return '0'
     return '%d' % equipment['build_cost_ic']
-    
+
 def compute_equipment_resource_cost(equipment_key, equipment):
     if 'resources' not in equipment or 'build_cost_ic' not in equipment:
         return '0'
     return '%d' % (sum(equipment["resources"].values()) * equipment['build_cost_ic'])
-    
+
 def compute_equipment_total_cost(equipment_key, equipment):
     result = equipment['build_cost_ic'] or 0
     if "resources" in equipment: result *= (1.0 + production_per_resource * sum(equipment["resources"].values()))
@@ -160,18 +160,18 @@ def compute_unit_stat_function(stat_key, format_string = "%0.1f", combiner = sum
             for equipment in unit_data["equipments"].values():
                 if stat_key in equipment:
                     yield equipment[stat_key]
-    
+
         result = combiner(get_stats()) * (1.0 + (unit_data[stat_key] or 0.0))
-        
+
         if result == 0.0 and not display_zero: return ''
-        else: 
+        else:
             if use_percent:
                 return re.sub('%.*?[df]', '\g<0>%%', format_string) % (result * 100.0)
             else:
                 return format_string % result
 
     return result_function
-    
+
 def equipment_name(key, value):
     tokens = key.split('_')
     result = ''
@@ -185,7 +185,7 @@ def equipment_name(key, value):
         result += token + ' '
     result = result[0].upper() + result[1:-1]
     return result
-    
+
 def compute_naval_max_strength(equipment_key, equipment):
     if 'max_strength' in equipment:
         return '%d' % equipment['max_strength']
@@ -198,7 +198,7 @@ unit_type_years = {
     "naval" : [1922, 1936, 1940, 1944],
     "air" : [1933, 1936, 1940, 1944, 1945, 1950],
 }
-    
+
 base_columns = {
     "land" : [
         ("{{icon|Production cost}}", compute_unit_cost),
@@ -275,32 +275,32 @@ equipment_columns = {
         ("Resource cost", compute_equipment_resource_cost),
         ("Total cost", compute_equipment_total_cost),
         ("Manpower", "%(manpower)d"),
-        
+
         ("Port usage", "%(port_capacity_usage)0.1f"),
         ("Operational range", "%(naval_range)d"),
         ("Speed", "%(naval_speed)d"),
-        
+
         ("Surface detection", "%(surface_detection)d"),
         ("Sub detection", "%(sub_detection)d"),
         ("Surface visibility", "%(surface_visibility)d"),
         ("Submerged visibility", "%(sub_visibility)d"),
-        
+
         ("HP", compute_naval_max_strength),
         ("Evasion", "%(evasion)d"),
         ("Reliability", lambda k, v: "%d%%" % (v['reliability'] * 100.0)),
-        
+
         ("Gun range", "%(fire_range)d"),
         ("Gun attack", "%(attack)d"),
         ("Torpedo attack", "%(torpedo_attack)d"),
         ("Anti air attack", "%(anti_air_attack)d"),
         ("Sub attack", "%(sub_attack)d"),
         ("Shore bombardment", "%(shore_bombardment)d"),
-        
+
         ("Armor", "%(armor_value)d"),
         ("Piercing", "%(ap_attack)d"),
-        
+
         ("Deck size", "%(carrier_size)d"),
-        
+
         ("Equipment", equipment_name),
         ),
     "air" : (

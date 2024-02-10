@@ -12,6 +12,7 @@ game_encodings = {
     'HoI3' : ['cp1252', 'utf_8_sig'],
     'HoI3_vanilla' : ['cp1252', 'utf_8_sig'],
     'HoI4' : ['utf_8_sig', 'cp1252'],
+    'HoI4mod' : ['utf_8_sig', 'cp1252'],
     'HoI4_beta' : ['utf_8_sig', 'cp1252'],
     'Stellaris' : ['utf_8_sig', 'cp1252'],
 }
@@ -79,6 +80,22 @@ def parse_merge(path, game=None, filter_pattern = None, merge_levels = 0, apply_
                 if apply_defines:
                     tree = tree.apply_defines()
                 result.merge(tree, merge_levels)
+    return result
+
+def parse_merge_every(paths, game=None, filter_pattern = None, merge_levels = 0, apply_defines = False, *args, **kwargs):
+    """Given a directory, return a Tree as if all .txt files in the directory were a single file"""
+    for path in paths:
+        path, game = pyradox.config.combine_path_and_game(path, game)
+
+        result = pyradox.Tree()
+        for filename in os.listdir(path):
+            fullpath = os.path.join(path, filename)
+            if os.path.isfile(fullpath):
+                if should_parse(fullpath, filename, filter_pattern):
+                    tree = parse_file(fullpath, game = game, *args, **kwargs)
+                    if apply_defines:
+                        tree = tree.apply_defines()
+                    result.merge(tree, merge_levels)
     return result
 
 def parse_walk(dirname, filter_pattern = None, *args, **kwargs):
