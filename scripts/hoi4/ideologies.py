@@ -3,8 +3,7 @@ import os
 import re
 import pyradox
 
-ideologies = pyradox.txt.parse_file(os.path.join(pyradox.get_game_directory('HoI4')
-                                , 'common', 'ideologies', '00_ideologies.txt'))['ideologies']
+ideologies = hoi4.load.get_ideologies()
 countries = hoi4.load.get_countries()
 demo = {}
 comm = {}

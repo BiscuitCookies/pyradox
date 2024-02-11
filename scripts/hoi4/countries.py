@@ -12,7 +12,7 @@ countries = hoi4.load.get_countries()
 total = pyradox.Tree()
 
 states = pyradox.txt.parse_merge(os.path.join(pyradox.get_game_directory('HoI4'), 'history', 'states'))
-state_categories = pyradox.txt.parse_merge(os.path.join(pyradox.get_game_directory(game), 'common', 'state_category'),
+state_categories = pyradox.txt.parse_merge(os.path.join(pyradox.get_game_directory('HoI4mod'), 'common', 'state_category'),
                                          verbose=False, merge_levels = 1)
 
 state_categories = state_categories['state_categories']
@@ -111,36 +111,36 @@ def sum_keys_function(*sum_keys):
     return result_function
 
 columns = (
-    ('','<noinclude>{{CT head|</noinclude>\n{{CT\n| col = %(color)s\n'),
-    ('Country', 'name = %(name)s\n'),
-    ('Tag', 'tag = %(tag)s\n'),
-    ('Ruling ideology', lambda k, v: 'id = %s' % (v['ruling_party']).title()),
-    ('Ruling party', 'subid =\n'),
-    ('States', 'stat = %(states)d\n'),
-    ('Research slots', lambda k, v: 'rs = %d\n' % (v['set_research_slots'] or 2)),
-    ('Core population (M)', lambda k, v: ('pop = %0.2f' % (v['core_manpower'] / 1e6)) if 'core_manpower' in v else '' ),
-    ('Non-core population (M)', lambda k, v: ('ncore = %0.2f\n' % (v['non_core_manpower'] / 1e6)) if 'non_core_manpower' in v else '' ),
-    ('Victory point', 'vp = %(indvidual_vp)d'),
-    ('Victory points', 'vps = %(victory_points)d\n'),
-    ('Building slots', 'bs = %(building_slots)d\n'),
-    ('{{icon|MIC}}', lambda k, v: 'mil = %d\n' % (v['arms_factory'] or 0)),
-    ('{{icon|NIC}}', lambda k, v: 'nav = %d\n' % (v['dockyard'] or 0)),
-    ('{{icon|CIC}}', lambda k, v: 'civ = %d\n' % (v['industrial_complex'] or 0)),
-    ('{{icon|Oil}}', lambda k, v: 'oil = %d\n' % (v['oil'] or 0)),
-    ('{{icon|Aluminium}}', lambda k, v: 'alu = %d\n' % (v['aluminium'] or 0)),
-    ('{{icon|Rubber}}', lambda k, v: 'rub = %d\n' % (v['rubber'] or 0)),
-    ('{{icon|Tungsten}}', lambda k, v: 'tun = %d\n' % (v['tungsten'] or 0)),
-    ('{{icon|Steel}}', lambda k, v: 'ste = %d\n' % (v['steel'] or 0)),
-    ('{{icon|Chromium}}', lambda k, v: 'chr = %d\n' % (v['chromium'] or 0)),
-    ('{{icon|Crystals}}', lambda k, v: 'cry = %d\n' % (v['crystals'] or 0)),
+    ('','{{CT| col = %(color)s '),
+    ('Country', 'name = %(name)s '),
+    ('Tag', 'tag = %(tag)s '),
+    ('Ruling ideology', lambda k, v: 'id = %s ' % (v['ruling_party']).title()),
+    ('Ruling party',  lambda k, v: ('subid = %s ' % (v['ruling_subid'])) if 'ruling_subid' in v else ''),
+    ('States', 'stat = %(states)d '),
+    ('Research slots', lambda k, v: 'rs = %d ' % (v['set_research_slots'] or 2)),
+    ('Core population (M)', lambda k, v: ('pop = %0.2f ' % (v['core_manpower'] / 1e6)) if 'core_manpower' in v else '' ),
+    ('Non-core population (M)', lambda k, v: ('ncore = %0.2f ' % (v['non_core_manpower'] / 1e6)) if 'non_core_manpower' in v else '' ),
+    ('Victory point', 'vp = %(indvidual_vp)d '),
+    ('Victory points', 'vps = %(victory_points)d '),
+    ('Building slots', 'bs = %(building_slots)d '),
+    ('{{icon|MIC}}', lambda k, v: 'mil = %d ' % (v['arms_factory'] or 0)),
+    ('{{icon|NIC}}', lambda k, v: 'nav = %d ' % (v['dockyard'] or 0)),
+    ('{{icon|CIC}}', lambda k, v: 'civ = %d ' % (v['industrial_complex'] or 0)),
+    ('{{icon|Oil}}', lambda k, v: 'oil = %d ' % (v['oil'] or 0)),
+    ('{{icon|Aluminium}}', lambda k, v: 'alu = %d ' % (v['aluminium'] or 0)),
+    ('{{icon|Rubber}}', lambda k, v: 'rub = %d ' % (v['rubber'] or 0)),
+    ('{{icon|Tungsten}}', lambda k, v: 'tun = %d ' % (v['tungsten'] or 0)),
+    ('{{icon|Steel}}', lambda k, v: 'ste = %d ' % (v['steel'] or 0)),
+    ('{{icon|Chromium}}', lambda k, v: 'chr = %d ' % (v['chromium'] or 0)),
+    ('{{icon|Crystals}}', lambda k, v: 'cry = %d ' % (v['crystals'] or 0)),
     #('Air base levels', '%(air_base)d'),
     #('Naval base levels', '%(naval_base)d'),
-    ('Science abse', 'sci = %(science)s\n'),
-    ('Societal development', 'soc = %(society)s\n'),
-    ('Illiteracy', 'ill = %(illiteracy)s\n'),
-    ('Poverty', 'pov = %(poverty)s\n'),
-    ('Race', 'race = %(race)s\n'),
-    ('Notes','}}<noinclude>}}\n[[Category:Country table templates]]\n</noinclude>')
+    ('Science base', 'sci = %(science)s '),
+    ('Societal development', 'soc = %(society)s '),
+    ('Illiteracy', 'ill = %(illiteracy)s '),
+    ('Poverty', 'pov = %(poverty)s '),
+    ('Race', 'race = %(race)s '),
+    ('Notes','}}')
     )
 
 out = open("out/countriesstart.txt", "w", encoding='utf-8')

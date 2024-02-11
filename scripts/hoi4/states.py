@@ -33,7 +33,7 @@ for state in states.values():
     state['owner_name'] = countries[history['owner']]['name']
     state['human_name'] = pyradox.yml.get_localisation(state['name'], game = game)
 
-    state['cores_name'] = '<ul style="list-style: none;">'
+    state['cores_name'] = '<ul style="list-style:none; margin:0;">'
     for core in history.find_all('add_core_of'):
         human_core = countries[core]['name']
         flag_core = ' <li>{{flag|%s|wrap = yes}}</li>' % human_core
@@ -47,7 +47,7 @@ for state in states.values():
         state_claims_counter += 1
 
     if state_claims_counter > 0:
-        state['claims_name'] = '<ul style="list-style: none;">'
+        state['claims_name'] = '<ul style="list-style:none; margin:0;">'
         for claim in history.find_all('add_claim_by'):
             human_claim = countries[claim]['name']
             flag_claim = ' <li>{{flag|%s|wrap = yes}}</li>' % human_claim
@@ -67,8 +67,9 @@ for state in states.values():
     if 'resources' in state:
         for resource, quantity in state['resources'].items():
             state[resource] = quantity
-
+    state['indvidual_vp_total'] = 0
     for _, victory_points in history.find_all('victory_points', tuple_length = 2):
+            state['indvidual_vp_total'] = (state['indvidual_vp_total'] or 0) + 1
             state['victory_point_total'] = (state['victory_point_total'] or 0) + victory_points
 
     if 'buildings' in history:
@@ -90,24 +91,25 @@ columns = (
     ('ID', '%(id)s'),
     ('Country', '{{flag|%(owner_name)s|wrap = yes}}'),
     # ('Tag', '%(owner)s'),
-    ('{{Icon|vp}}', '%(victory_point_total)d'),
-    ('{{Icon|pop|(M)}}', lambda k, v: '%0.2f' % ((v['manpower'] or 0) / 1e6) ),
-    ('{{Icon|infra}}', '%(infrastructure)d'),
+    ('{{Icon|vp|width=20px}}', '%(victory_point_total)d(%(indvidual_vp_total)d)'),
+    ('{{Icon|pop|(M)|width=20px}}', lambda k, v: '%0.2f' % ((v['manpower'] or 0) / 1e6) ),
+    ('{{Icon|infra|width=20px}}', '%(infrastructure)d'),
     ('State category', '%(state_category_name)s'),
-    ('{{Icon|Building slot}}', '%(building_slots)d'),
-    ('{{Icon|MIC}}', '%(arms_factory)d'),
-    ('{{Icon|NIC}}', '%(dockyard)d'),
-    ('{{Icon|CIC}}', '%(industrial_complex)d'),
+    ('{{Icon|Building slot|width=20px}}', '%(building_slots)d'),
+    ('{{Icon|MIC|width=20px}}', '%(arms_factory)d'),
+    ('{{Icon|NIC|width=20px}}', '%(dockyard)d'),
+    ('{{Icon|CIC|width=20px}}', '%(industrial_complex)d'),
     # ('Total factories', sum_keys_function('arms_factory', 'dockyard', 'industrial_complex')),
-    ('{{Icon|Oil}}', '%(oil)d'),
-    ('{{Icon|Aluminium}}', '%(aluminium)d'),
-    ('{{Icon|Rubber}}', '%(rubber)d'),
-    ('{{Icon|Tungsten}}', '%(tungsten)d'),
-    ('{{Icon|Steel}}', '%(steel)d'),
-    ('{{Icon|Chromium}}', '%(chromium)d'),
+    ('{{Icon|Oil|width=20px}}', '%(oil)d'),
+    ('{{Icon|Aluminium|width=20px}}', '%(aluminium)d'),
+    ('{{Icon|Rubber|width=20px}}', '%(rubber)d'),
+    ('{{Icon|Tungsten|width=20px}}', '%(tungsten)d'),
+    ('{{Icon|Steel|width=20px}}', '%(steel)d'),
+    ('{{Icon|Chromium|width=20px}}', '%(chromium)d'),
+    ('{{Icon|Crystal|width=20px}}', '%(crystals)d'),
     # ('Total resources', sum_keys_function('oil', 'aluminium', 'rubber', 'tungsten', 'steel', 'chromium')),
-    ('{{Icon|Air base}}', '%(air_base)d'),
-    ('{{Icon|Naval base}}', '%(naval_base)d'),
+    ('{{Icon|Air base|width=20px}}', '%(air_base)d'),
+    ('{{Icon|Naval base|width=20px}}', '%(naval_base)d'),
     ('Cores', '%(cores_name)s'),
     ('Claims', '%(claims_name)s'),
     )

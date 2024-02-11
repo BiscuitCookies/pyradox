@@ -15,12 +15,37 @@ def get_equipments(beta = False):
     game = 'HoI4_beta' if beta else 'HoI4'
     return pyradox.parse_merge('common/units/equipment', game = game, merge_levels = 1)['equipments']
 
+def get_ideologies(beta = False):
+    return pyradox.txt.parse_file(os.path.join(pyradox.get_game_directory('HoI4')
+                                , 'common', 'ideologies', '00_ideologies.txt'))['ideologies']
+
+def get_characters(beta = False):
+    game = 'HoI4_beta' if beta else 'HoI4'
+    character = {}
+    characters = {}
+    characters_data = pyradox.parse_merge('common/characters', game = game, merge_levels = 1)['characters']
+    for character_id in characters_data:
+        character = characters_data[character_id]
+        character['id'] = character_id
+        subideology = []
+        if 'country_leader' in character and 'ideology' in character['country_leader'] and character['country_leader']['ideology']:
+            for countryleader in character.find_all('country_leader'):
+                subideology.append(countryleader['ideology'])
+        character['subideology'] = subideology
+        characters[character_id] = character
+    #print('TEST FOR {0}'.format(characters))
+    return characters
+
+
+
 def compute_country_tag_and_name(filename):
-    m = re.match('.*([A-Z]{3})\s*-\s*(.*)\.txt$', filename)
+    m = re.match(r'.*([A-Z]{3})\s*-\s*(.*)\.txt$', filename)
     return m.group(1), m.group(2)
 
 def get_countries(beta = False, date = '1007.1.1'):
     game = 'HoI4_beta' if beta else 'HoI4'
+    charactersall = get_characters()
+    ideologies = get_ideologies()
     races = pyradox.txt.parse_file(
         os.path.join(pyradox.get_game_directory('HoI4'),
                  'common', 'ideas', '_race_pointers.txt'))['ideas']
@@ -44,11 +69,22 @@ def get_countries(beta = False, date = '1007.1.1'):
         country = country.at_time(date)
         tag, name = compute_country_tag_and_name(filename)
         country['tag'] = tag
+        country['characters'] = country.find_all('recruit_character')
+
         if 'set_politics' in country and 'ruling_party' in country['set_politics'] and country['set_politics']['ruling_party']:
             ruling_party = country['set_politics']['ruling_party']
         else:
             ruling_party = 'neutrality'
         country['ruling_party'] = ruling_party
+
+        for recruit in country['characters']:
+            for charsubid in charactersall[recruit]['subideology']:
+                #print('TEST FOR {0}'.format(recruit + ' ' + charsubid))
+                if charsubid in ideologies[ruling_party]['types'].keys():
+                    country['ruling_subid'] = charsubid
+                    break
+
+
         if 'set_technology' in country:
             for tech in country['set_technology']:
                 if tech in races['race_pointer']:
