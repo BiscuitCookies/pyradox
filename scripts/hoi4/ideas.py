@@ -24,7 +24,7 @@ company_types = [
 theorist_types = [
     'theorist',
     ]
-    
+
 military_chief_types = [
     'army_chief',
     'navy_chief',
@@ -40,7 +40,7 @@ types_to_tabulate = military_chief_types
 result = pyradox.Tree()
 
 
-idea_data = pyradox.txt.parse_merge(os.path.join(pyradox.get_game_directory('HoI4'), 'common', 'ideas'), merge_levels = 2)['ideas']
+idea_data = hoi4.load.get_ideas()
 for idea_type in types_to_tabulate:
     ideas = idea_data[idea_type]
     type_name = pyradox.yml.get_localisation(idea_type, game = 'HoI4')
@@ -51,7 +51,7 @@ for idea_type in types_to_tabulate:
         if idea_key == 'designer': continue
         row = pyradox.Tree()
         row['type'] = type_name
-        
+
         if 'allowed' not in idea:
             row['country'] = 'Generic'
         elif 'tag' in idea['allowed']:
@@ -158,7 +158,7 @@ def compute_effects(k, v):
 
     if 'equipment_bonus' in v:
         result += equipment_bonus(v['equipment_bonus'])
-    
+
     for trait_key in v.find_all('traits'):
         trait = traits[trait_key]
         subresult = ''
@@ -175,7 +175,7 @@ def compute_effects(k, v):
             row['name'] = pyradox.yml.get_localisation(trait_key, game = 'HoI4').replace('\\n', ' ')
             row['type'] = v['type']
             row['text'] = '<ul>' + subresult + '</ul>'
-            
+
             trait_result[trait_key] = row
         result += subresult
     result += '</ul>'

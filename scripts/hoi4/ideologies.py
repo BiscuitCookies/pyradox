@@ -45,25 +45,25 @@ for filename, characters in pyradox.txt.parse_dir(('common', 'characters'), game
 
 for type in democratics['types']:
     demo['name'] = pyradox.yml.get_localisation(type, game = 'HoI4') or type
-    demo['desc'] = pyradox.yml.get_localisation(type +'_desc', game = 'HoI4')
+    demo['desc'] = pyradox.yml.get_localisation_desc(type, game = 'HoI4')
     allide[type] = demo['name']
     demo['adherents'] = adherents[type]
     democratic[type] = demo
 for type in communisms['types']:
     comm['name'] = pyradox.yml.get_localisation(type, game = 'HoI4') or type
-    comm['desc'] = pyradox.yml.get_localisation(type +'_desc', game = 'HoI4')
+    comm['desc'] = pyradox.yml.get_localisation_desc(type, game = 'HoI4')
     allide[type] = comm['name']
     comm['adherents'] = adherents[type]
     communism[type] = comm
 for type in fascisms['types']:
     fasc['name'] = pyradox.yml.get_localisation(type, game = 'HoI4') or type
-    fasc['desc'] = pyradox.yml.get_localisation(type +'_desc', game = 'HoI4')
+    fasc['desc'] = pyradox.yml.get_localisation_desc(type, game = 'HoI4')
     allide[type] = fasc['name']
     fasc['adherents'] = adherents[type]
     fascism[type] = fasc
 for type in neutralitys['types']:
     neut['name'] = pyradox.yml.get_localisation(type, game = 'HoI4') or type
-    neut['desc'] = pyradox.yml.get_localisation(type +'_desc', game = 'HoI4')
+    neut['desc'] = pyradox.yml.get_localisation_desc(type, game = 'HoI4')
     allide[type] = neut['name']
     neut['adherents'] = adherents[type]
     neutrality[type] = neut

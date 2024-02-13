@@ -18,6 +18,8 @@ def get_equipments(beta = False):
 def get_ideologies(beta = False):
     return pyradox.txt.parse_file(os.path.join(pyradox.get_game_directory('HoI4')
                                 , 'common', 'ideologies', '00_ideologies.txt'))['ideologies']
+def get_ideas(beta = False):
+    return pyradox.txt.parse_merge(os.path.join(pyradox.get_game_directory('HoI4'), 'common', 'ideas'), merge_levels = 2)['ideas']
 
 def get_characters(beta = False):
     game = 'HoI4_beta' if beta else 'HoI4'
@@ -27,6 +29,7 @@ def get_characters(beta = False):
     for character_id in characters_data:
         character = characters_data[character_id]
         character['id'] = character_id
+        character['name'] = characters_data['name'] or character_id
         subideology = []
         if 'country_leader' in character and 'ideology' in character['country_leader'] and character['country_leader']['ideology']:
             for countryleader in character.find_all('country_leader'):
@@ -45,7 +48,14 @@ def compute_country_tag_and_name(filename):
 def get_countries(beta = False, date = '1007.1.1'):
     game = 'HoI4_beta' if beta else 'HoI4'
     charactersall = get_characters()
-    ideologies = get_ideologies()
+    ideologiesall = get_ideologies()
+    ideologies = {}
+    for ideo in ideologiesall:
+        #print('TEST FOR {0} '.format(ideo))
+        ideologies[ideo] = []
+        for subideo in ideologiesall[ideo]['types']:
+            ideologies[ideo].append(subideo)
+
     races = pyradox.txt.parse_file(
         os.path.join(pyradox.get_game_directory('HoI4'),
                  'common', 'ideas', '_race_pointers.txt'))['ideas']
@@ -76,14 +86,16 @@ def get_countries(beta = False, date = '1007.1.1'):
         else:
             ruling_party = 'neutrality'
         country['ruling_party'] = ruling_party
-
+        done = False
         for recruit in country['characters']:
             for charsubid in charactersall[recruit]['subideology']:
-                #print('TEST FOR {0}'.format(recruit + ' ' + charsubid))
-                if charsubid in ideologies[ruling_party]['types'].keys():
+                if charsubid in ideologies[ruling_party]:
                     country['ruling_subid'] = charsubid
+                    country['ruling_subid_name'] = pyradox.yml.get_localisation(charsubid, game = game)
+                    done = True
                     break
-
+                if done: break
+            if done: break
 
         if 'set_technology' in country:
             for tech in country['set_technology']:
@@ -118,7 +130,7 @@ def get_countries(beta = False, date = '1007.1.1'):
             print('HACK FOR {0}'.format(tag))
             country_colors[tag] = (165, 102, 152)
         country_color = country_colors[tag]
-        country['color'] = str(tuple(country_color))
+        country['color'] = str(tuple(country_color)).replace('(','').replace(')','')
 
         localisation_key = '%s_%s' % (tag, ruling_party)
         country['name'] = pyradox.yml.get_localisation(localisation_key, game = game) or pyradox.yml.get_localisation(tag, game = game) or localisation_key
