@@ -53,10 +53,11 @@ class ProvinceMap():
         self.game = game
 
         basedir = pyradox.get_game_directory(game)
+        basedirmod = pyradox.get_game_directory('HoI4mod')
 
         provinces_bmp = os.path.join(basedir, 'map', 'provinces.bmp')
         definition_csv = os.path.join(basedir, 'map', 'definition.csv')
-        default_map = os.path.join(basedir, 'map', 'default.map')
+        default_map = os.path.join(basedirmod, 'map', 'default.map')
 
         self.province_image = Image.open(provinces_bmp)
 
@@ -363,7 +364,7 @@ class ProvinceMap():
 
             scaled_pos_x, scaled_pos_y = pos_x * rel_scale_x, pos_y * rel_scale_y
 
-            text_size_x, text_size_y = draw.textsize(text, font=font)
+            _, _, text_size_x, text_size_y = draw.textbbox((0, 0), text, font=font)
 
             text_start_x = scaled_pos_x
             text_start_y = scaled_pos_y
