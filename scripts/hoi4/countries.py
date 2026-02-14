@@ -137,6 +137,7 @@ columns = (
     ('{{icon|Steel}}', lambda k, v: 'ste = %d ' % (v['steel'] or 0)),
     ('{{icon|Chromium}}', lambda k, v: 'chr = %d ' % (v['chromium'] or 0)),
     ('{{icon|Crystals}}', lambda k, v: 'cry = %d ' % (v['crystals'] or 0)),
+    ('{{icon|Coal}}', lambda k, v: 'cry = %d ' % (v['coal'] or 0)),
     #('Air base levels', '%(air_base)d'),
     #('Naval base levels', '%(naval_base)d'),
     ('Science base', 'sci = %(science)s '),

@@ -111,6 +111,7 @@ columns = (
     ('{{Icon|Steel|width=20px}}', '%(steel)d'),
     ('{{Icon|Chromium|width=20px}}', '%(chromium)d'),
     ('{{Icon|Crystal|width=20px}}', '%(crystals)d'),
+    ('{{Icon|Coal|width=20px}}', '%(coal)d'),
     # ('Total resources', sum_keys_function('oil', 'aluminium', 'rubber', 'tungsten', 'steel', 'chromium')),
     ('{{Icon|Air base|width=20px}}', '%(air_base)d'),
     ('{{Icon|Naval base|width=20px}}', '%(naval_base)d'),
