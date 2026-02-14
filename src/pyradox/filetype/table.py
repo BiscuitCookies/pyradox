@@ -179,7 +179,7 @@ def make_table(tree, dialect, column_specs = None, filter_function = None, sort_
 
     return table
 
-def make_tables(tree, dialect, split_function, filter_function = None, *args, **kwargs):
+def make_tables(tree, dialect, split_function, filter_function = None, add_headers = False, *args, **kwargs):
     # TODO: better version
 
     split_set = set()
@@ -194,8 +194,10 @@ def make_tables(tree, dialect, split_function, filter_function = None, *args, **
     result = ''
 
     for split_id in sorted(split_set):
-        filter_function = lambda k, v: split_function(k, v) == split_id
-        result += make_table(tree, dialect, filter_function = filter_function, *args, **kwargs)
+        filter_function_with_split = lambda k, v: (split_function(k, v) == split_id) and filter_function(k, v)
+        if add_headers:
+            result += f'== {split_id} ==\n'
+        result += make_table(tree, dialect, filter_function = filter_function_with_split, *args, **kwargs)
         result += '\n'
 
     return result

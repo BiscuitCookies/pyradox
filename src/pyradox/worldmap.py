@@ -93,9 +93,9 @@ class ProvinceMap():
                     self.province_color_by_id[province_id] = province_color
                     self.province_id_by_color[province_color] = province_id
                     province_count += 1
-                except ValueError:
+                except (ValueError, IndexError):
                     if rowcount > 0:  # skip errors in the first row, because that can be a heading line
-                        warnings.warn('Could not parse province definition from row "%s" of %s.' % (str(row), definition_csv))
+                        warnings.warn('Could not parse province definition from row #%d with contents "%s" of %s.' % (rowcount + 1, str(row), definition_csv))
 
             print("Read %d provinces from %s." % (province_count, definition_csv))
 

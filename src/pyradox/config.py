@@ -17,12 +17,15 @@ prefixes = [
 
 game_suffixes = {
     'EU4' : r'Europa Universalis IV',
+    'EU4_beta' : r'europa_universalis_iv',
     'HoI3' : r'Hearts of Iron 3/tfh',
     'HoI3_vanilla' : r'Hearts of Iron 3',
     'HoI4' : r'equestria_dev',
     'HoI4mod' : r'Hearts of Iron IV',
     'HoI4_beta' : r'Hearts of Iron IV BETA',
     'Stellaris' : r'Stellaris',
+    'Stellaris_beta' : r'Stellaris Beta',
+    'VIC3' : r'Victoria 3',
 }
 
 game_directories = {}

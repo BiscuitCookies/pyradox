@@ -24,9 +24,9 @@ def parse_file(path, game = None, path_relative_to_game = True, headings = None)
         pass
     else:
         path, game = pyradox.config.combine_path_and_game(path, game)
-   
-    with open(path, encoding=encoding) as f:
-        lines = [line for line in f.readlines() if not re.match('#.*', line)]
+    encodings = pyradox.txt.game_encodings[game]
+
+    lines = [line for line in pyradox.txt.readlines(path, encodings) if not re.match('#.*', line)]
     return parse(lines, path, headings = headings)
     
 def parse_dir(dirname):
@@ -37,6 +37,16 @@ def parse_dir(dirname):
             _, ext = os.path.splitext(fullpath)
             if ext == ".csv":
                 yield filename, parse_file(fullpath)
+
+
+def parse_merge(path, game=None, merge_levels=0, *args, **kwargs):
+    """Given a directory, return a Tree as if all .csv files in the directory were a single file"""
+    path, game = pyradox.config.combine_path_and_game(path, game)
+
+    result = pyradox.Tree()
+    for filename, tree in parse_dir(path):
+        result.merge(tree, merge_levels)
+    return result
 
 def parse(lines, filename, headings = None):
     """ headings: Specify the headings explicitly. Otherwise they are read from the first line in the file. """
@@ -66,16 +76,17 @@ def parse(lines, filename, headings = None):
     
     return result 
 
-def write_tree(tree, filename, column_specs, dialect, filter_function = None, sort_function = None):
+def write_tree(tree, filename, column_specs, dialect, filter_function = None, sort_function = None, encoding = 'utf-8'):
     """
     Writes a csv file from the given tree.
     column_specs: A list of (header, format_spec), one tuple per column. format_spec is as per pyradox.format.format_key_value.
     dialect: What dialect to use. Generally 'excel' or 'paradox'.
     filter_function: filter_function(key, value) determines whether to include each item.
     sort_function: sort_function(key, value) determines whether to include each item.
+    encoding: which encoding to use when writing the file. Default utf-8
     """
     
-    with open(filename, 'w', newline='') as f:
+    with open(filename, 'w', newline='', encoding=encoding) as f:
         writer = csv.writer(f, dialect = dialect)
         
         # workaround for excel interpreting leading ID as special file type

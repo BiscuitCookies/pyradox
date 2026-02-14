@@ -1,3 +1,5 @@
+from sympy import false
+
 int_values = (
     1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 25, 30, 33, 40, 50, 60, 75, 100, 150, 200,
     )
@@ -186,7 +188,9 @@ non_percent_floats = set([
 
 def is_percent_bonus(bonus_name):
     if bonus_name in non_percent_floats: return False
-    if bonus_name not in bonus_types: print(bonus_name)
+    if bonus_name not in bonus_types:
+        print(bonus_name)
+        return False
     idx = bonus_types.index(bonus_name)
     lower_bound = bonus_ranges[idx][0]
     return isinstance(lower_bound, float)
@@ -217,9 +221,13 @@ def is_beneficial(bonus_name, value):
     if isinstance(value, bool):
         return True
     else:
-        idx = bonus_types.index(bonus_name)
-        normal_value = bonus_normal_values[idx]
-        return (normal_value > 0) == (value > 0)
+        if bonus_name in bonus_types:
+            idx = bonus_types.index(bonus_name)
+            normal_value = bonus_normal_values[idx]
+            return (normal_value > 0) == (value > 0)
+        else:
+            # TODO: implement missing types
+            return True
 
 def generate_options(bonus_type_index):
     bonus_type, normal_value, value_range = bonus_data[bonus_type_index]

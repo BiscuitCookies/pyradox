@@ -9,12 +9,15 @@ import warnings
 
 game_encodings = {
     'EU4' : ['cp1252', 'utf_8_sig'],
+    'EU4_beta' : ['cp1252', 'utf_8_sig'],
     'HoI3' : ['cp1252', 'utf_8_sig'],
     'HoI3_vanilla' : ['cp1252', 'utf_8_sig'],
     'HoI4' : ['utf_8_sig', 'cp1252'],
     'HoI4mod' : ['utf_8_sig', 'cp1252'],
     'HoI4_beta' : ['utf_8_sig', 'cp1252'],
     'Stellaris' : ['utf_8_sig', 'cp1252'],
+    'Stellaris_beta' : ['utf_8_sig', 'cp1252'],
+    'VIC3' : ['utf_8_sig', 'utf_8'],
 }
 
 def readlines(filename, encodings):

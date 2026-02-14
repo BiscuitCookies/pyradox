@@ -75,10 +75,14 @@ for state in states.values():
     if 'buildings' in history:
         for building, quantity in history['buildings'].items():
             if isinstance(building, str):
+                if isinstance(quantity, pyradox.Tree) and 'level' in quantity:
+                    quantity = quantity['level']
                 state[building] = (state[building] or 0) + quantity
             else:
                 # province buildings
                 for building, quantity in quantity.items():
+                    if isinstance(quantity, pyradox.Tree) and 'level' in quantity:
+                        quantity = quantity['level']
                     state[building] = (state[building] or 0) + quantity
 
 def sum_keys_function(*sum_keys):
@@ -118,7 +122,7 @@ if beta:
     out_filename = "out/states_beta.txt"
 else:
     out_filename = "out/states.txt"
-with open(out_filename, "w", encoding='utf-8') as out:
+with open(out_filename, "w", encoding = 'utf_8_sig') as out:
     out.write(pyradox.table.make_table(states, 'wiki', columns, sort_function = lambda key, value: value['id']))
 
 if beta:
